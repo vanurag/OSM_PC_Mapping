@@ -56,6 +56,21 @@ Furthermore, it is in the scope of the project to automatically extract building
 
 
 \section{Work packages and timeline}
+The project has been broken down to two basic tasks. The implementation details and the expected outcomes are as follows:
+
+\begin{itemize}
+\item \textbf{Segmenting the Point Cloud:-} \\ \\
+We start with parsing the point cloud data from the bundler files ~\cite{paper} and use point cloud library ~\cite{paper} to do the further processing. For getting a 2-D outline of the buildings, we need to be able to segment out the point clouds into parts that belong to a plane which is up-right (and hence shows up as a line in the 2-D map) and the parts that are outliers to these planes. \\
+
+To be able to do this, we first estimate the up-vector which is coplanar with the facades of the building and is normal to the ground. The data we will be working upon, mostly includes pictures taken from ground level. So, the smallest eigenvector of the covariance matrix generated from the camera positions should be vertical to the ground and a reasonable approximation for the up-right vector. Even in the cases where we might not have a fully flat ground, one could break it down into piece-wise flat areas and estimate up-right vectors at each of these regions. \\
+
+Next thing to do would be to find the normal vector corresponding to each 3-D point by taking a patch in the point cloud around each of these points and calculating the smallest eigenvector of the covariance matrix obtained from the points belonging to this patch. The direction of the normal vectors can be used to estimate the probability of each point being normal to the up-right vector. \\
+
+Thresholding upon this probability measure helps in segmenting out the outliers and get the part of the point cloud that can be used to generate a 2-D outline that can be used in the next phase. \\
+
+Anurag will be working on this part and plans to build a catkin package in C++ which can run on 64-bit Linux machines.
+
+\end{itemize}
 
 The idea for matching the outlines is to break it down to a 2D problem and use the Iterative Closest Point technique to find the best match between the building outlines and the pointcloud. For that, the pointcloud will be reduced to a two dimensional pointcloud and the building outlines will be discretized to a number of points (i.e. a pointcloud will be interpolated from the polygons that are existing in OSM).
 A state-of-the-art ICP, such as libpointmatcher~\cite{Pomerleau12comp} will then be used to align those two pointclouds.
@@ -63,26 +78,26 @@ A state-of-the-art ICP, such as libpointmatcher~\cite{Pomerleau12comp} will then
 Investigations will be made on how well the complexity fof OSM data can be reduced i.e., by removing holes and separations between buildings.
 
 The first workpackage will be to use arbitrary GPS coordinates, build a simple interface to input data and automatically download an OSM file.
-\begin{table}
-\center
-\renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
-\captionsetup{singlelinecheck=false, font=blue, labelfont=sc, labelsep=quad}
-% \caption{Timeline}\vskip -1.5ex
-\begin{tabular}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm}}
-% \toprule
-\addlinespace[1.5ex]
-1947 & AT and T Bell Labs develop the idea of cellular phones\\
-1968 & Xerox Palo Alto Research Centre envisage the 'Dynabook\\
-1971 & Busicom 'Handy-LE' Calculator\\
-1973 & First mobile handset invented by Martin Cooper\\
-1978 & Parker Bros. Merlin Computer Toy\\
-1981 & Osborne 1 Portable Computer\\
-1982 & Grid Compass 1100 Clamshell Laptop\\
-1983 & TRS-80 Model 100 Portable PC\\
-1984 & Psion Organiser Handheld Computer\\
-1991 & Psion Series 3 Minicomputer\\
-\end{tabular}
-\end{table}
+% \begin{table}
+% \center
+% \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
+% \captionsetup{singlelinecheck=false, font=blue, labelfont=sc, labelsep=quad}
+% % \caption{Timeline}\vskip -1.5ex
+% \begin{tabular}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm}}
+% % \toprule
+% \addlinespace[1.5ex]
+% 1947 & AT and T Bell Labs develop the idea of cellular phones\\
+% 1968 & Xerox Palo Alto Research Centre envisage the 'Dynabook\\
+% 1971 & Busicom 'Handy-LE' Calculator\\
+% 1973 & First mobile handset invented by Martin Cooper\\
+% 1978 & Parker Bros. Merlin Computer Toy\\
+% 1981 & Osborne 1 Portable Computer\\
+% 1982 & Grid Compass 1100 Clamshell Laptop\\
+% 1983 & TRS-80 Model 100 Portable PC\\
+% 1984 & Psion Organiser Handheld Computer\\
+% 1991 & Psion Series 3 Minicomputer\\
+% \end{tabular}
+% \end{table}
 
 \section{Outcomes and Demonstration}
 
@@ -103,8 +118,5 @@ Give detailed information on the expected outcome of your project and the experi
 {\small
 \bibliography{refs}
 \bibliographystyle{plain}}}
-
-
-
 
 \end{document}
