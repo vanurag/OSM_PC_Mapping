@@ -52,7 +52,7 @@ To be able to do this, we first estimate the up-vector which is coplanar with th
 
 Next thing to do would be to find the normal vector corresponding to each 3-D point by taking a patch in the point cloud around each of these points and calculating the smallest eigenvector of the covariance matrix obtained from the points belonging to this patch. The direction of the normal vectors can be used to estimate the probability of each point being normal to the up-right vector. \\
 
-Thresholding upon this probability measure helps in segmenting out the outliers and get the part of the point cloud that can be used to generate a 2-D outline that can be used in the next phase. One could also iteratively refine the point clouds using techniques like RANSAC or Expectation Maximization.  \\
+Thresholding upon this probability measure helps in segmenting out the outliers and get the part of the point cloud that can be used to generate a 2-D outline that can be used in the next phase. One could also iteratively refine the point clouds using techniques like RANSAC ~\cite{fischler1981random} or Expectation Maximization ~\cite{dempster1977maximum}.  \\
 
 Anurag will be working on this part and plans to build a catkin package in C++ which can run on 64-bit Linux machines.
 
