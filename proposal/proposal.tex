@@ -62,8 +62,7 @@ Reconstruction of abstract building geometry (including roof shape) on basis of 
 \section{Work packages and timeline}
 The project has been broken down to two basic tasks. The implementation details and the expected outcomes are as follows:
 
-\begin{itemize}
-\item \textbf{Segmenting the Point Cloud:-} \\ \\
+\subsection{Segmenting the Point Cloud}
 We start with parsing the point cloud data from the bundler files ~\cite{bundler} and use point cloud library ~\cite{pcl} to do the further processing. For getting a 2-D outline of the buildings, we need to be able to segment out the point clouds into parts that belong to a plane which is up-right (and hence shows up as a line in the 2-D map) and the parts that are outliers to these planes. \\
 
 To be able to do this, we first estimate the up-vector which is coplanar with the facades of the building and is normal to the ground. The data we will be working upon, mostly includes pictures taken from ground level. So, the smallest eigenvector of the covariance matrix generated from the camera positions should be vertical to the ground and a reasonable approximation for the up-right vector. Even in the cases where we might not have a fully flat ground, one could break it down into piece-wise flat areas and estimate up-right vectors at each of these regions. \\
@@ -73,7 +72,11 @@ Next thing to do would be to find the normal vector corresponding to each 3-D po
 Thresholding upon this probability measure helps in segmenting out the outliers and get the part of the point cloud that can be used to generate a 2-D outline that can be used in the next phase. One could also iteratively refine the point clouds using techniques like RANSAC ~\cite{fischler1981random} or Expectation Maximization ~\cite{dempster1977maximum}.  \\
 
 Anurag will be working on this part and plans to build a catkin package in C++ which can run on 64-bit Linux machines.
-\item The idea for matching the outlines is to break it down to a 2D problem and use the Iterative Closest Point~\cite{icp} technique to find the best match between the building outlines and the pointcloud. For that, the pointcloud will be reduced to a two dimensional pointcloud and the building outlines will be discretized to a number of points (i.e. a pointcloud will be interpolated from the polygons that are existing in OSM).
+
+\subsection{Outline Matching} % (fold)
+ \label{sub:outline_matching}
+ 
+The idea for matching the outlines is to break it down to a 2D problem and use the Iterative Closest Point~\cite{icp} technique to find the best match between the building outlines and the pointcloud. For that, the pointcloud will be reduced to a two dimensional pointcloud and the building outlines will be discretized to a number of points (i.e. a pointcloud will be interpolated from the polygons that are existing in OSM).
 A state-of-the-art ICP, such as libpointmatcher~\cite{Pomerleau12comp} will then be used to align those two pointclouds.
 
 Investigations will be made on how well the complexity of OSM data can be reduced i.e., by removing holes and separations between buildings.
@@ -100,10 +103,6 @@ Mid of May & Interface both parts
 
 \end{tabular}
 \end{table}
-
-
-\end{itemize}
-
 
 \section{Outcomes and Demonstration}
 
