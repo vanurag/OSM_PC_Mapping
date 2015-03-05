@@ -43,7 +43,21 @@ A high level description of the project, mentioning the main goal, the input and
 
 \section{Work packages and timeline}
 
-Detailed descriptions of work packages you planned, their outcomes, the responsible group member and estimated timeline. Specify the challenges that will be tackled and considered solutions with possible alternatives, citing related documents if applicable. Mention the platform (Android, PC etc.) and the language (C++ etc.) you plan to use.
+The project has been broken down to two basic tasks. The implementation details and the expected outcomes are as follows:
+
+\begin{itemize}
+\item \textbf{Segmenting the Point Cloud:-} \\ \\
+We start with parsing the point cloud data from the bundler files ~\cite{paper} and use point cloud library ~\cite{paper} to do the further processing. For getting a 2-D outline of the buildings, we need to be able to segment out the point clouds into parts that belong to a plane which is up-right (and hence shows up as a line in the 2-D map) and the parts that are outliers to these planes. \\
+
+To be able to do this, we first estimate the up-vector which is coplanar with the facades of the building and is normal to the ground. The data we will be working upon, mostly includes pictures taken from ground level. So, the smallest eigenvector of the covariance matrix generated from the camera positions should be vertical to the ground and a reasonable approximation for the up-right vector. Even in the cases where we might not have a fully flat ground, one could break it down into piece-wise flat areas and estimate up-right vectors at each of these regions. \\
+
+Next thing to do would be to find the normal vector corresponding to each 3-D point by taking a patch in the point cloud around each of these points and calculating the smallest eigenvector of the covariance matrix obtained from the points belonging to this patch. The direction of the normal vectors can be used to estimate the probability of each point being normal to the up-right vector. \\
+
+Thresholding upon this probability measure helps in segmenting out the outliers and get the part of the point cloud that can be used to generate a 2-D outline that can be used in the next phase. \\
+
+Anurag will be working on this part and plans to build a catkin package in C++ which can run on 64-bit Linux machines.
+
+\end{itemize}
 
 \section{Outcomes and Demonstration}
 
