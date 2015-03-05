@@ -59,6 +59,10 @@ Furthermore, it is in the scope of the project to automatically extract building
 
 The idea for matching the outlines is to break it down to a 2D problem and use the Iterative Closest Point technique to find the best match between the building outlines and the pointcloud. For that, the pointcloud will be reduced to a two dimensional pointcloud and the building outlines will be discretized to a number of points (i.e. a pointcloud will be interpolated from the polygons that are existing in OSM).
 A state-of-the-art ICP, such as libpointmatcher~\cite{Pomerleau12comp} will then be used to align those two pointclouds.
+
+Investigations will be made on how well the complexity fof OSM data can be reduced i.e., by removing holes and separations between buildings.
+
+The first workpackage will be to use arbitrary GPS coordinates, build a simple interface to input data and automatically download an OSM file.
 \begin{table}
 \center
 \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
@@ -83,6 +87,8 @@ A state-of-the-art ICP, such as libpointmatcher~\cite{Pomerleau12comp} will then
 \section{Outcomes and Demonstration}
 
 Give detailed information on the expected outcome of your project and the experiments you plan to test your implementation. If applicable, describe the online or offline demo you plan to present at the end of the semester.
+
+
 
 
 \vspace{1cm}
