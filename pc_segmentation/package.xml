@@ -1,0 +1,16 @@
+<package>
+
+  <name>pc_segmentation</name>
+  <version>0.0.1</version>
+  <description>A package for segmenting faccades out of a point cloud and getting a 2D building outline as seen from above.</description>
+  <maintainer email="anurag.vempati@mavt.ethz.ch">Anurag Vempati</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>gflags_catkin</build_depend>
+  <build_depend>glog_catkin</build_depend>
+  <build_depend>opencv2_catkin</build_depend>
+
+</package>
