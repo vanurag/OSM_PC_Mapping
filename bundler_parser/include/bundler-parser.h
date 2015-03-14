@@ -28,12 +28,14 @@ class BundlerParser {
 
     // list of camera indices with this 3D point in their FOV and the position at which it appears in the image
     std::vector<std::pair<int, std::pair<x, y>>> view_list;
-  }
+  };
 
   // returns Camera struct corresponding to the image_index-th image in the list.
+  // indexing from 0.
   Camera getCamera(int image_index) const;
 
   // returns index-th 3DPoint in the bundler file
+  // indexing from 0.
   3DPoint get3dPoint(int index) const;
 
  private:
