@@ -2,6 +2,7 @@
 #define COMMON_H_
 
 #include <flags.h>
+#include "utility-functions.h"
 
 // STL headers.
 #include <cmath>
