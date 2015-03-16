@@ -5,7 +5,7 @@
 
 // Bundler Parser
 DECLARE_string(file);
-DECLARE_string(task);
+DECLARE_string(query);
 DECLARE_int32(index);
 
 #endif // BUNDLER_PARSER_FLAGS_H_

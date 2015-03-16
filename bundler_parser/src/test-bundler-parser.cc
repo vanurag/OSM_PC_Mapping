@@ -13,7 +13,7 @@ int main(int num_arguments, char** arguments) {
   
   CHECK_GT(FLAGS_index, -1) << "Provide a valid index (>= 0)";
   
-  if (FLAGS_task == "camera") {
+  if (FLAGS_query == "camera") {
     BundlerParser::Camera camera = parser.getCamera(FLAGS_index);
     
     LOG(INFO) << "Camera Position:- " << camera.position.at(0) << ", "
@@ -32,7 +32,7 @@ int main(int num_arguments, char** arguments) {
               << ", " << camera.distortion_coeffs.second;
   }
   
-  if (FLAGS_task == "3dpoint") {
+  if (FLAGS_query == "3dpoint") {
     BundlerParser::Point3D point = parser.get3dPoint(FLAGS_index);
     
     LOG(INFO) << "3D Point coordinates:- " << point.position.at(0) << ", "
