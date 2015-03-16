@@ -26,13 +26,19 @@ class BundlerParser {
     std::vector<std::pair<int, std::pair<int, int>>> view_list;
   };
 
-  // returns Camera struct corresponding to the image_index-th image in the list.
+  // returns set of Camera structs corresponding to those in image_indices list.
   // indexing from 0.
-  Camera getCamera(int image_index);
+  std::vector<BundlerParser::Camera> getCameras(std::vector<int> image_indices);
 
-  // returns index-th Point3D in the bundler file
+  // returns set of Point3D structs corresponding to those in point_indices list.
   // indexing from 0.
-  Point3D get3dPoint(int index);
+  std::vector<BundlerParser::Point3D> get3dPoints(std::vector<int> point_indices);
+
+  // Print camera struct
+  void printCamera(const Camera& camera) const;
+
+  // Print Point3D struct
+  void print3DPoint(const Point3D& point) const;
 
  private:
 
