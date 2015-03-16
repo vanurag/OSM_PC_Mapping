@@ -7,6 +7,7 @@
 // STL headers.
 #include <cmath>
 #include <ctype.h>
+#include <fstream>
 #include <iostream>
 #include <numeric>
 #include <string>
