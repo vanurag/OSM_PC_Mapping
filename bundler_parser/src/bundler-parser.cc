@@ -51,12 +51,12 @@ std::vector<BundlerParser::Camera> BundlerParser::getCameras(
   
   // Vector of camers queried
   std::vector<BundlerParser::Camera> cameras;
-  int prev_index = 0;
+  int prev_index = -1;
   
   for (auto index : image_indices) {
     
     // Seek to the next camera in the query list. 5 lines for each camera
-    seekToLine(file_handle, 5*(index - prev_index) + 1, true); 
+    seekToLine(file_handle, 5*(index - prev_index - 1) + 1, true); 
     prev_index = index;
   
     // Fill up Camera struct
@@ -130,12 +130,12 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
   
   // Vector of 3d points queried
   std::vector<BundlerParser::Point3D> points;
-  int prev_index = 0;
+  int prev_index = -1;
   
   for (auto index : point_indices) {
     
     // seek to the next point index. 3 lines for each point
-    seekToLine(file_handle, 3*(index - prev_index) + 1, true); 
+    seekToLine(file_handle, 3*(index - prev_index - 1) + 1, true); 
     prev_index = index;
     
     // Fill up Point3D struct

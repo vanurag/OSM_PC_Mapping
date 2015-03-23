@@ -15,11 +15,12 @@ int main(int num_arguments, char** arguments) {
   PcHandler pc_handle;
   
   std::vector<int> point_indices;
-  for (int i = 0; i < 1540786; ++i) {
+  for (int i = 0; i < parser.num_points; ++i) {
     point_indices.push_back(i);
   }
   std::vector<BundlerParser::Point3D> points = parser.get3dPoints(point_indices);
   
+  LOG(INFO) << "parsed";
   for (auto point : points) {
     // pack r/g/b into rgb
     uint8_t r = point.color.at(0);

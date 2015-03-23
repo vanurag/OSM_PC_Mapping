@@ -40,12 +40,13 @@ class BundlerParser {
   // Print Point3D struct
   void print3DPoint(const Point3D& point) const;
 
+  // meta-data
+  int num_images;
+  int num_points;
+
  private:
 
   std::fstream file_handle;
-
-  int num_images;
-  int num_points;
 };
 
 } // namespace bundler_parser
