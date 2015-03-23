@@ -6,6 +6,20 @@ namespace bundler_parser {
 // Constructor
 BundlerParser::BundlerParser(const std::string filename) {
   file_handle.open(filename, std::ifstream::in);
+  
+  char temp[100];
+  std::string temp_string;
+  std::string::size_type next;
+  
+  // read meta-data
+  seekToLine(file_handle, 2, false);
+  file_handle.getline(temp, 90); // no. of images, no. of points
+  temp_string = std::string(temp);
+  num_images = std::stoi(temp_string, &next);
+  num_points = std::stoi(temp_string.substr(next), &next);
+  LOG(INFO) << "No. Images: " << num_images;
+  LOG(INFO) << "No. Points: " << num_points;
+  LOG(INFO) << "--------------";
 };
 
 
@@ -26,21 +40,14 @@ std::vector<BundlerParser::Camera> BundlerParser::getCameras(
   // Sort indices
   std::sort(image_indices.begin(), image_indices.end());
   
-  // seek from beginning of the file
-  seekToLine(file_handle, 2, false);
-  file_handle.getline(temp, 90); // no. of images, no. of points
-  temp_string = std::string(temp);
-  int num_images = std::stoi(temp_string, &next);
-  int num_points = std::stoi(temp_string.substr(next), &next);
-  LOG(INFO) << "No. Images: " << num_images;
-  LOG(INFO) << "No. Points: " << num_points;
-  LOG(INFO) << "--------------";
-  
   // Check if valid indices
   CHECK_GT(image_indices.at(0), -1) 
       << "Provide a valid index (>= 0)";
   CHECK_GT(num_images, image_indices.at(image_indices.size() - 1)) 
       << "not all specified image_indices are less than the total number of images!";
+      
+  // seek from beginning of the file
+  seekToLine(file_handle, 3, false);
   
   // Vector of camers queried
   std::vector<BundlerParser::Camera> cameras;
@@ -49,7 +56,7 @@ std::vector<BundlerParser::Camera> BundlerParser::getCameras(
   for (auto index : image_indices) {
     
     // Seek to the next camera in the query list. 5 lines for each camera
-    seekToLine(file_handle, 5*(index - prev_index - 1) + 1, true); 
+    seekToLine(file_handle, 5*(index - prev_index) + 1, true); 
     prev_index = index;
   
     // Fill up Camera struct
@@ -109,22 +116,16 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
   // Sort indices
   std::sort(point_indices.begin(), point_indices.end());
   
-  // seek from beginning of the file
-  seekToLine(file_handle, 2, false);
-  file_handle.getline(temp, 90); // no. of images, no. of points
-  temp_string = std::string(temp);
-  int num_images = std::stoi(temp_string, &next);
-  int num_points = std::stoi(temp_string.substr(next), &next);
-  LOG(INFO) << "No. Images: " << num_images;
-  LOG(INFO) << "No. Points: " << num_points;
-  LOG(INFO) << "--------------";
-  
   // Check if valid indices
   CHECK_GT(point_indices.at(0), -1) 
       << "Provide a valid index (>= 0)";
   CHECK_GT(num_points, point_indices.at(point_indices.size() - 1)) 
       << "Not all specified indices are lower than the total number of points!";
       
+  // seek from beginning of the file
+  seekToLine(file_handle, 3, false);
+     
+  // skip camera data
   seekToLine(file_handle, 5*num_images + 1, true); // 5 lines for each camera
   
   // Vector of 3d points queried
@@ -134,7 +135,7 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
   for (auto index : point_indices) {
     
     // seek to the next point index. 3 lines for each point
-    seekToLine(file_handle, 3*(index - prev_index - 1) + 1, true); 
+    seekToLine(file_handle, 3*(index - prev_index) + 1, true); 
     prev_index = index;
     
     // Fill up Point3D struct

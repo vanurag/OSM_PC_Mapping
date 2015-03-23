@@ -43,6 +43,9 @@ class BundlerParser {
  private:
 
   std::fstream file_handle;
+
+  int num_images;
+  int num_points;
 };
 
 } // namespace bundler_parser
