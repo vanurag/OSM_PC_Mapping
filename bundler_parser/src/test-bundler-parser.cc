@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bundler-parser.h"
+#include "flags.h"
 
 using namespace bundler_parser;
 

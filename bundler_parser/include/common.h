@@ -1,8 +1,5 @@
-#ifndef COMMON_H_
-#define COMMON_H_
-
-#include <flags.h>
-#include "utility-functions.h"
+#ifndef BUNDLER_PARSER_COMMON_H_
+#define BUNDLER_PARSER_COMMON_H_
 
 // STL headers.
 #include <cmath>
@@ -21,4 +18,4 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#endif // COMMON_H_
+#endif // BUNDLER_PARSER_COMMON_H_

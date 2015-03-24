@@ -4,6 +4,6 @@
 #include <gflags/gflags.h>
 
 // Bundler Parser
-DECLARE_string(file);
+DECLARE_string(bundler_file);
 
 #endif // PC_HANDLER_FLAGS_H_

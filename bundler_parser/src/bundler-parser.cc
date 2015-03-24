@@ -1,5 +1,6 @@
 #include "bundler-parser.h"
 #include "common.h"
+#include "utility-functions.h"
 
 namespace bundler_parser {
   

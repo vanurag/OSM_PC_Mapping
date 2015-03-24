@@ -1,7 +1,7 @@
-#ifndef COMMON_H_
-#define COMMON_H_
+#ifndef PC_SEGMENTATION_COMMON_H_
+#define PC_SEGMENTATION_COMMON_H_
 
-#include <flags.h>
+#include <bundler-parser.h>
 
 // PCL
 #include <pcl/point_types.h>
@@ -29,4 +29,4 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#endif // COMMON_H_
+#endif // PC_SEGMENTATION_COMMON_H_
