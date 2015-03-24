@@ -7,6 +7,9 @@
 #include <pcl/point_types.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/parse.h>
+#include <pcl/common/common_headers.h>
 
 // STL headers.
 #include <cmath>
@@ -19,6 +22,7 @@
 
 // Boost
 #include <boost/multi_array.hpp>
+#include <boost/thread/thread.hpp>
 
 // GFlags, GLog and GTest headers.
 #include <gflags/gflags.h>

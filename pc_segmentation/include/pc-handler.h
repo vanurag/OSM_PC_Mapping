@@ -10,7 +10,6 @@ class PcHandler {
   PcHandler() {};
   virtual ~PcHandler() {};
 
-  pcl::PointXYZRGB point;
   pcl::PointCloud<pcl::PointXYZRGB> cloud;
 };
 
