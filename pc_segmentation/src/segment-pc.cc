@@ -29,13 +29,12 @@ int main(int num_arguments, char** arguments) {
   std::vector<BundlerParser::Point3D> points = parser.get3dPoints(point_indices);
   
   // register the parsed 3d points to cloud
-  pc_handle.addToCloud(&points);
+  pc_handle.addToCloud(points);
   
   // mean-adjusted cloud
-  pc_handle.meanAdjustCloud();
-  
+  pc_handle.meanAdjustCloud(pc_handle.cloud);
   // visualize
-  pc_handle.visualize();
+  pc_handle.visualize(FLAGS_show_cloud, FLAGS_show_cameras);
   
 
   return 0;

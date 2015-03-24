@@ -16,13 +16,13 @@ class PcHandler {
 
   // adds additional points to the cloud
   void addToCloud(
-      std::vector<bundler_parser::BundlerParser::Point3D> * points);
+      std::vector<bundler_parser::BundlerParser::Point3D>& points);
 
   // adjust the point cloud such that it's mean is at the origin
-  void meanAdjustCloud();
+  void meanAdjustCloud(pcl::PointCloud<pcl::PointXYZRGB>& cloud);
 
   // Visualization routine
-  void visualize();
+  void visualize(bool show_cloud, bool show_cameras);
 
   // cameras
   std::vector<bundler_parser::BundlerParser::Camera> cameras;

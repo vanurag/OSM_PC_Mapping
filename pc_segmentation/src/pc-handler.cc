@@ -4,13 +4,13 @@
 namespace pc_handler {
 
 void PcHandler::addToCloud(
-    std::vector<bundler_parser::BundlerParser::Point3D> * points) {
+    std::vector<bundler_parser::BundlerParser::Point3D>& points) {
   
   pcl::PointXYZRGB pc_point;
   int num_points = 0;
   
   for (std::vector<bundler_parser::BundlerParser::Point3D>::const_iterator it
-           = (*points).begin(); it != (*points).end(); ++it) {
+           = points.begin(); it != points.end(); ++it) {
     
     // position
     pc_point.x = it->position.at(0);
@@ -45,7 +45,7 @@ void PcHandler::addToCloud(
 
 
 // adjust the point cloud such that it's mean is at the origin
-void PcHandler::meanAdjustCloud() {
+void PcHandler::meanAdjustCloud(pcl::PointCloud<pcl::PointXYZRGB>& cloud) {
   // mean-centered point cloud
   for (pcl::PointCloud<pcl::PointXYZRGB>::iterator it = cloud.begin();
        it != cloud.end(); ++it) {
@@ -57,36 +57,45 @@ void PcHandler::meanAdjustCloud() {
 
 
 // Visualization routine
-void PcHandler::visualize() {
-  //pcl::visualization::CloudViewer cloud_viewer("point cloud");
-  //pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&pc_handle.cloud);
-  //cloud_viewer.showCloud(cloud_pointer, "point cloud");
-
-  //while (! cloud_viewer.wasStopped()) {
-  //}
+void PcHandler::visualize(bool show_cloud, bool show_cameras) {
+  pcl::visualization::PCLVisualizer pc_viewer("Point Cloud Viewer");
+  pcl::visualization::PCLVisualizer cam_viewer("Camera Viewer");
+  pc_viewer.setBackgroundColor(0, 0, 0);
+  cam_viewer.setBackgroundColor(0, 0, 0);
   
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer 
-      (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-  viewer->setBackgroundColor(0, 0, 0);
+  // Point cloud visualization
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&cloud);
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud_pointer);
+  pc_viewer.addPointCloud<pcl::PointXYZRGB>(cloud_pointer, rgb, "point cloud");
+  pc_viewer.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud");
+  pc_viewer.addCoordinateSystem(1.0);
   
-  viewer->addPointCloud<pcl::PointXYZRGB>(cloud_pointer, rgb, "point cloud");
+  // camera positions visualization
+  pcl::PointCloud<pcl::PointXYZ> cam_cloud;
+  pcl::PointXYZ cam_point;
+  for (std::vector<bundler_parser::BundlerParser::Camera>::iterator it = 
+           cameras.begin();
+       it != cameras.end(); ++it) {
+    // position
+    cam_point.x = it->position.at(0);
+    cam_point.y = it->position.at(1);
+    cam_point.z = it->position.at(2);
+    
+    cam_cloud.push_back(cam_point);
+  }
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cam_cloud_pointer(&cam_cloud);
+  cam_viewer.addPointCloud<pcl::PointXYZ>(cam_cloud_pointer, "camera positions");
+  cam_viewer.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "camera positions");
+  cam_viewer.addCoordinateSystem (1.0);
+    
+  pc_viewer.initCameraParameters();
+  cam_viewer.initCameraParameters();
   
-  //pcl::PointXYZRGB pc_point;
-  //pc_point.x = pc_handle.mean_point.at(0);
-  //pc_point.y = pc_handle.mean_point.at(1);
-  //pc_point.z = pc_handle.mean_point.at(2);
-  //viewer->addSphere (pc_point, 10.0, 0.5, 0.5, 0.0, "sphere");
-  
-  viewer->setPointCloudRenderingProperties(
-      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "point cloud");
-  viewer->addCoordinateSystem(1.0);
-  viewer->initCameraParameters();
-  
-  while (! viewer->wasStopped())
-  {
-    viewer->spinOnce (100);
+  while ( (!pc_viewer.wasStopped()) && (!cam_viewer.wasStopped()) ) {
+    pc_viewer.spinOnce (100);
+    cam_viewer.spinOnce (100);
     boost::this_thread::sleep(boost::posix_time::microseconds(100000));
   }
 }
