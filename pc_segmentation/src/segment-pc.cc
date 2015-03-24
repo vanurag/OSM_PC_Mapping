@@ -14,6 +14,14 @@ int main(int num_arguments, char** arguments) {
   BundlerParser parser(FLAGS_bundler_file);
   PcHandler pc_handle;
   
+  // get camera data
+  std::vector<int> camera_indices;
+  for (int i = 0; i < parser.num_images; ++i) {
+    camera_indices.push_back(i);
+  }
+  pc_handle.cameras = parser.getCameras(camera_indices);
+  
+  // get 3d point data
   std::vector<int> point_indices;
   for (int i = 0; i < parser.num_points; ++i) {
     point_indices.push_back(i);

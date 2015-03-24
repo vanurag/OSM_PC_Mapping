@@ -24,6 +24,9 @@ class PcHandler {
   // Visualization routine
   void visualize();
 
+  // cameras
+  std::vector<bundler_parser::BundlerParser::Camera> cameras;
+  // point cloud
   pcl::PointCloud<pcl::PointXYZRGB> cloud;
 
  private:
