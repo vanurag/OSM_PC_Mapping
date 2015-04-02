@@ -2,7 +2,11 @@
 Might map OSM outlines to pointclouds in the future
 
 ###Bundler Parser###
-Compile: ```bash catkin build bundler_parser```
+Compile: 
+```bash
+catkin build bundler_parser
+```
+
 Run:
 
 Camera Query:
@@ -18,7 +22,11 @@ devel/bundler_parser/lib/bundler_parser/parse_bundler --alsologtostderr --colorl
 
 
 ###Point Cloud Segmentation###
-Compile: ```bash catkin build pc_segmentation```
+Compile: 
+```bash 
+catkin build pc_segmentation
+```
+
 Run:
 
 View Point Cloud:
