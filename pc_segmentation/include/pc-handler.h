@@ -21,6 +21,10 @@ class PcHandler {
   // adjust the point cloud such that it's mean is at the origin
   void meanAdjustCloud(pcl::PointCloud<pcl::PointXYZRGB>& cloud);
 
+  // estimate point cloud normals
+  void estimateNormals(
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, const float search_radius);
+
   // Visualization routine
   void visualize(bool show_cloud, bool show_cameras);
 
@@ -28,6 +32,8 @@ class PcHandler {
   std::vector<bundler_parser::BundlerParser::Camera> cameras;
   // point cloud
   pcl::PointCloud<pcl::PointXYZRGB> cloud;
+  // point normals
+  pcl::PointCloud<pcl::Normal> normals;
 
  private:
 

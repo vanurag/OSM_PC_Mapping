@@ -56,6 +56,27 @@ void PcHandler::meanAdjustCloud(pcl::PointCloud<pcl::PointXYZRGB>& cloud) {
 }
 
 
+// estimate point cloud normals
+void PcHandler::estimateNormals(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, const float search_radius) {
+
+  // Create the normal estimation class, and pass the input dataset to it
+  pcl::NormalEstimationOMP<pcl::PointXYZRGB, pcl::Normal> ne;
+  ne.setInputCloud(cloud);
+
+  // Create an empty kdtree representation, and pass it to the normal estimation object.
+  // Its content will be filled inside the object, based on the given input dataset.
+  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>());
+  ne.setSearchMethod(tree);
+
+  // Use all neighbors in search_radius
+  ne.setRadiusSearch(search_radius);
+
+  // Compute the features
+  ne.compute(normals);
+}
+
+
 // Visualization routine
 void PcHandler::visualize(bool show_cloud, bool show_cameras) {
   pcl::visualization::PCLVisualizer pc_viewer("Point Cloud Viewer");
@@ -69,6 +90,11 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
   pc_viewer.addPointCloud<pcl::PointXYZRGB>(cloud_pointer, rgb, "point cloud");
   pc_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud");
+  // normals
+  estimateNormals(cloud_pointer, 0.4);
+  pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
+  pc_viewer.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>
+      (cloud_pointer, normal_pointer, 10, 0.5, "point normals");
   pc_viewer.addCoordinateSystem(1.0);
   
   // camera positions visualization
