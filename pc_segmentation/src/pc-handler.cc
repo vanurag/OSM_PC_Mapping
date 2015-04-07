@@ -12,9 +12,9 @@ void PcHandler::addToCloud(
            = points.begin(); it != points.end(); ++it) {
     
     // position
-    pc_point.x = it->position.at(0);
-    pc_point.y = it->position.at(1);
-    pc_point.z = it->position.at(2);
+    pc_point.x = it->position(0);
+    pc_point.y = it->position(1);
+    pc_point.z = it->position(2);
     
     // color
     pc_point.r = it->color.at(0);
@@ -83,12 +83,13 @@ std::vector<double> PcHandler::estimateGroundPlane() {
   cv::Mat camera_positions;
   //camera_positions.create(static_cast<int>(cameras.size()), 3, CV_64F);
   for (auto camera : cameras) {
-    cv::Mat temp(camera.position);
+    cv::Mat temp(camera.center);
     cv::Mat pos = temp.t();
     if (pos.at<double>(0, 0) != 0.0 || pos.at<double>(0, 1) != 0.0 || pos.at<double>(0, 2) != 0.0) {
       //LOG(INFO) << pos.at<double>(0, 0) << " " << pos.at<double>(0, 1) << " " << pos.at<double>(0, 2);
       camera_positions.push_back(pos);
     }
+    //camera_positions.push_back(pos);
   }
 
   LOG(INFO) << "Solving PCA..." << camera_positions.size();
@@ -140,9 +141,9 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
            cameras.begin();
        it != cameras.end(); ++it) {
     // position
-    cam_point.x = it->position.at(0);
-    cam_point.y = it->position.at(1);
-    cam_point.z = it->position.at(2);
+    cam_point.x = it->center.at(0) - mean_point.at(0);
+    cam_point.y = it->center.at(1) - mean_point.at(1);
+    cam_point.z = it->center.at(2) - mean_point.at(2);
     
     cam_cloud.push_back(cam_point);
   }

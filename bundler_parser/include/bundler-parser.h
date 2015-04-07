@@ -11,7 +11,7 @@ class BundlerParser {
   virtual ~BundlerParser();
 
   struct Camera {
-    Eigen::Vector3d center;
+    std::vector<double> center;
     Eigen::Vector3d translation;
     Eigen::Matrix3d pose;
     double focal_length;

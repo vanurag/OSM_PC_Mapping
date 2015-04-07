@@ -96,7 +96,10 @@ std::vector<BundlerParser::Camera> BundlerParser::getCameras(
     camera.translation(2) = std::stod(temp_string, &next);
 
     // Camera center
-    camera.center = -1.0 * camera.pose.transpose() * camera.translation;
+    Eigen::Vector3d camera_center = -1.0 * camera.pose.transpose() * camera.translation;
+    camera.center.push_back(camera_center(0));
+    camera.center.push_back(camera_center(1));
+    camera.center.push_back(camera_center(2));
     
     cameras.push_back(camera);
   }
@@ -174,9 +177,9 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
 
 // Print Camera struct
 void BundlerParser::printCamera(const BundlerParser::Camera& camera) const {
-  LOG(INFO) << "Camera Position:- " << camera.center(0) << ", "
-                                      << camera.center(1) << ", "
-                                      << camera.center(2);
+  LOG(INFO) << "Camera Position:- " << camera.center.at(0) << ", "
+                                      << camera.center.at(1) << ", "
+                                      << camera.center.at(2);
 
   LOG(INFO) << "Camera Translation:- " << camera.translation(0) << ", "
                                         << camera.translation(1) << ", "
