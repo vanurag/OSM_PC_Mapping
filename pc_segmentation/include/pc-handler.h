@@ -25,6 +25,9 @@ class PcHandler {
   void estimateNormals(
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, const float search_radius);
 
+  // estimate ground plane
+  std::vector<double> estimateGroundPlane();
+
   // Visualization routine
   void visualize(bool show_cloud, bool show_cameras);
 
@@ -34,6 +37,8 @@ class PcHandler {
   pcl::PointCloud<pcl::PointXYZRGB> cloud;
   // point normals
   pcl::PointCloud<pcl::Normal> normals;
+  // ground plane
+  std::vector<double> ground;
 
  private:
 

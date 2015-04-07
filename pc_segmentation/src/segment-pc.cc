@@ -33,6 +33,14 @@ int main(int num_arguments, char** arguments) {
   
   // mean-adjusted cloud
   pc_handle.meanAdjustCloud(pc_handle.cloud);
+
+  // Ground Plane
+  pc_handle.estimateGroundPlane();
+
+  // Point Normals
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&pc_handle.cloud);
+  pc_handle.estimateNormals(cloud_pointer, 0.4);
+
   // visualize
   pc_handle.visualize(FLAGS_show_cloud, FLAGS_show_cameras);
   

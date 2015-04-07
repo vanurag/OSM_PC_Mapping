@@ -31,4 +31,7 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
+// OpenCV
+#include <opencv2/core/core.hpp>
+
 #endif // PC_SEGMENTATION_COMMON_H_

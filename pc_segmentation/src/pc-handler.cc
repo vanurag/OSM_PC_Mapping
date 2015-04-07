@@ -1,5 +1,4 @@
 #include "pc-handler.h"
-#include "common.h"
 
 namespace pc_handler {
 
@@ -77,6 +76,44 @@ void PcHandler::estimateNormals(
 }
 
 
+// estimate ground plane
+std::vector<double> PcHandler::estimateGroundPlane() {
+
+  LOG(INFO) << "cameras size: " << cameras.size();
+  cv::Mat camera_positions;
+  //camera_positions.create(static_cast<int>(cameras.size()), 3, CV_64F);
+  for (auto camera : cameras) {
+    cv::Mat temp(camera.position);
+    cv::Mat pos = temp.t();
+    if (pos.at<double>(0, 0) != 0.0 || pos.at<double>(0, 1) != 0.0 || pos.at<double>(0, 2) != 0.0) {
+      //LOG(INFO) << pos.at<double>(0, 0) << " " << pos.at<double>(0, 1) << " " << pos.at<double>(0, 2);
+      camera_positions.push_back(pos);
+    }
+  }
+
+  LOG(INFO) << "Solving PCA..." << camera_positions.size();
+  cv::PCA ground_plane(camera_positions, cv::Mat(), 3);
+
+  // Eigen values
+  cv::Mat eigenvalues = ground_plane.eigenvalues;
+  LOG(INFO) << "First three eigenvalues = " << eigenvalues.at<double>(0, 0) << ", "
+            << eigenvalues.at<double>(0, 1) << ", " << eigenvalues.at<double>(0, 2);
+
+  // Principal Axes
+  cv::Mat pc = ground_plane.eigenvectors;
+  for (int i = 0; i < 3; ++i) {
+    LOG(INFO) << "PC " << i << ": [" << pc.at<double>(i, 0) << ", "
+                                     << pc.at<double>(i, 1) << ", "
+                                     << pc.at<double>(i, 2) << "]";
+  }
+
+  ground.push_back(ground_plane.eigenvectors.at<double>(2, 0));
+  ground.push_back(ground_plane.eigenvectors.at<double>(2, 1));
+  ground.push_back(ground_plane.eigenvectors.at<double>(2, 2));
+
+  return ground;
+}
+
 // Visualization routine
 void PcHandler::visualize(bool show_cloud, bool show_cameras) {
   pcl::visualization::PCLVisualizer pc_viewer("Point Cloud Viewer");
@@ -91,7 +128,6 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
   pc_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud");
   // normals
-  estimateNormals(cloud_pointer, 0.4);
   pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
   pc_viewer.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>
       (cloud_pointer, normal_pointer, 10, 0.5, "point normals");
@@ -114,6 +150,13 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
   cam_viewer.addPointCloud<pcl::PointXYZ>(cam_cloud_pointer, "camera positions");
   cam_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "camera positions");
+  // Ground Plane
+  pcl::ModelCoefficients coeffs;
+  coeffs.values.push_back (ground.at(0));
+  coeffs.values.push_back (ground.at(1));
+  coeffs.values.push_back (ground.at(2));
+  coeffs.values.push_back (0.0);
+  cam_viewer.addPlane(coeffs, "plane");
   cam_viewer.addCoordinateSystem (1.0);
     
   pc_viewer.initCameraParameters();
