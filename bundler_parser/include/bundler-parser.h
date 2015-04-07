@@ -11,14 +11,15 @@ class BundlerParser {
   virtual ~BundlerParser();
 
   struct Camera {
-    std::vector<double> position;
-    std::vector<std::vector<double>> pose;
+    Eigen::Vector3d center;
+    Eigen::Vector3d translation;
+    Eigen::Matrix3d pose;
     double focal_length;
     std::pair<double, double> distortion_coeffs;
   };
 
   struct Point3D {
-    std::vector<double> position;
+    Eigen::Vector3d position;
     std::vector<uint8_t> color;
     int num_cameras;                        // no. of cameras with this 3d point in their FOV
 

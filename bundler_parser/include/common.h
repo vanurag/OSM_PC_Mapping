@@ -13,6 +13,9 @@
 // Boost
 #include <boost/multi_array.hpp>
 
+// Eigen
+#include <Eigen/Dense>
+
 // GFlags, GLog and GTest headers.
 #include <gflags/gflags.h>
 #include <glog/logging.h>

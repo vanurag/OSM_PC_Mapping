@@ -79,24 +79,24 @@ std::vector<BundlerParser::Camera> BundlerParser::getCameras(
     for (int i = 0; i < 3; ++i) {
       file_handle.getline(temp, 90);
       temp_string = std::string(temp);
-      std::vector<double> row;
-      row.push_back(std::stod(temp_string, &next));
+      camera.pose(i, 0) = std::stod(temp_string, &next);
       temp_string = temp_string.substr(next);
-      row.push_back(std::stod(temp_string, &next));
+      camera.pose(i, 1) = std::stod(temp_string, &next);
       temp_string = temp_string.substr(next);
-      row.push_back(std::stod(temp_string, &next));
-      
-      camera.pose.push_back(row);
+      camera.pose(i, 2) = std::stod(temp_string, &next);
     }
     
-    // Camera position
+    // Camera translation
     file_handle.getline(temp, 90);
     temp_string = std::string(temp);
-    camera.position.push_back(std::stod(temp_string, &next));
+    camera.translation(0) = std::stod(temp_string, &next);
     temp_string = temp_string.substr(next);
-    camera.position.push_back(std::stod(temp_string, &next));
+    camera.translation(1) = std::stod(temp_string, &next);
     temp_string = temp_string.substr(next);
-    camera.position.push_back(std::stod(temp_string, &next));
+    camera.translation(2) = std::stod(temp_string, &next);
+
+    // Camera center
+    camera.center = -1.0 * camera.pose.transpose() * camera.translation;
     
     cameras.push_back(camera);
   }
@@ -145,11 +145,11 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
     // 3D point position
     file_handle.getline(temp, 90);
     temp_string = std::string(temp);
-    point.position.push_back(std::stod(temp_string, &next));
+    point.position(0) = std::stod(temp_string, &next);
     temp_string = temp_string.substr(next);
-    point.position.push_back(std::stod(temp_string, &next));
+    point.position(1) = std::stod(temp_string, &next);
     temp_string = temp_string.substr(next);
-    point.position.push_back(std::stod(temp_string, &next));
+    point.position(2) = std::stod(temp_string, &next);
     
     // 3D point color
     file_handle.getline(temp, 90);
@@ -174,15 +174,19 @@ std::vector<BundlerParser::Point3D> BundlerParser::get3dPoints(
 
 // Print Camera struct
 void BundlerParser::printCamera(const BundlerParser::Camera& camera) const {
-  LOG(INFO) << "Camera Position:- " << camera.position.at(0) << ", "
-                                      << camera.position.at(1) << ", "
-                                      << camera.position.at(2); 
+  LOG(INFO) << "Camera Position:- " << camera.center(0) << ", "
+                                      << camera.center(1) << ", "
+                                      << camera.center(2);
+
+  LOG(INFO) << "Camera Translation:- " << camera.translation(0) << ", "
+                                        << camera.translation(1) << ", "
+                                        << camera.translation(2);
     
   LOG(INFO) << "Camera Pose:- ";
   for (int i = 0; i < 3; ++i) {
-    LOG(INFO) << camera.pose.at(i).at(0) << ", "
-              << camera.pose.at(i).at(1) << ", "
-              << camera.pose.at(i).at(2); 
+    LOG(INFO) << camera.pose(i, 0) << ", "
+              << camera.pose(i, 1) << ", "
+              << camera.pose(i, 2);
   }
   
   LOG(INFO) << "Intrinsics (f, k1, k2) = " << camera.focal_length 
@@ -193,9 +197,9 @@ void BundlerParser::printCamera(const BundlerParser::Camera& camera) const {
 
 // Print Point3D struct
 void BundlerParser::print3DPoint(const BundlerParser::Point3D& point) const {
-  LOG(INFO) << "3D Point coordinates:- " << point.position.at(0) << ", "
-                                       << point.position.at(1) << ", "
-                                       << point.position.at(2); 
+  LOG(INFO) << "3D Point coordinates:- " << point.position(0) << ", "
+                                       << point.position(1) << ", "
+                                       << point.position(2);
 
   LOG(INFO) << "3D Point color:- " << static_cast<int>(point.color.at(0)) << ", "
                                    << static_cast<int>(point.color.at(1)) << ", "

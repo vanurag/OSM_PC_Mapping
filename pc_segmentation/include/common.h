@@ -22,6 +22,9 @@
 #include <string>
 #include <vector>
 
+// Eigen
+#include <Eigen/Dense>
+
 // Boost
 #include <boost/multi_array.hpp>
 #include <boost/thread/thread.hpp>
