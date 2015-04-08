@@ -22,3 +22,7 @@
 *.out
 *.synctex.gz
 *.fdb_latexmk
+*.*~
+*.project
+*.cproject
+*.settings
