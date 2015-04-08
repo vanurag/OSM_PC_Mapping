@@ -12,12 +12,12 @@ Run:
 Camera Query:
 
 ```bash
-devel/bundler_parser/lib/bundler_parser/parse_bundler --alsologtostderr --colorlogtostderr --file=[full_path]/aachen.out --query=camera --indices="1 3 12"
+devel/lib/bundler_parser/parse_bundler --alsologtostderr --colorlogtostderr --file=[full_path]/file_name.out --query=camera --indices="1 3 12"
 ```
 3D Point Query:
 
 ```bash
-devel/bundler_parser/lib/bundler_parser/parse_bundler --alsologtostderr --colorlogtostderr --file=[full_path]/aachen.out --query=3dpoint --indices="1 5 8"
+devel/lib/bundler_parser/parse_bundler --alsologtostderr --colorlogtostderr --file=[full_path]/file_name.out --query=3dpoint --indices="1 5 8"
 ```
 
 
@@ -29,8 +29,8 @@ catkin build pc_segmentation
 
 Run:
 
-View Point Cloud:
+Segment Point Cloud:
 
 ```bash
-devel/pc_segmentation/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bundler_file=[full_path]/aachen.out --show_cameras=true --show_cloud=true"
+devel/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bundler_file=[full_path]/file_name.out --show_cameras=true --show_cloud=true --show_normals=false --segmentation_threshold=0.001
 ```
