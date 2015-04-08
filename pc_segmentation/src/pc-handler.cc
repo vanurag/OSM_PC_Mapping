@@ -48,12 +48,23 @@ void PcHandler::meanAdjustCloud(pcl::PointCloud<pcl::PointXYZRGB>& cloud) {
   // mean-centered point cloud
   for (pcl::PointCloud<pcl::PointXYZRGB>::iterator it = cloud.begin();
        it != cloud.end(); ++it) {
-    (*it).x -= mean_point.at(0);
-    (*it).y -= mean_point.at(1);
-    (*it).z -= mean_point.at(2);
+    it->x -= mean_point.at(0);
+    it->y -= mean_point.at(1);
+    it->z -= mean_point.at(2);
   }
 }
 
+
+// adjust the camera centers such that it's mean is at the origin
+void PcHandler::meanAdjustCameras(std::vector<bundler_parser::BundlerParser::Camera>& cameras) {
+  // mean-centered camera centers
+  for (std::vector<bundler_parser::BundlerParser::Camera>::iterator it = cameras.begin();
+       it != cameras.end(); ++it) {
+    it->center.at(0) -= mean_point.at(0);
+    it->center.at(1) -= mean_point.at(1);
+    it->center.at(2) -= mean_point.at(2);
+  }
+}
 
 // estimate point cloud normals
 void PcHandler::estimateNormals(
@@ -93,7 +104,7 @@ std::vector<double> PcHandler::estimateGroundPlane() {
   }
 
   LOG(INFO) << "Solving PCA..." << camera_positions.size();
-  cv::PCA ground_plane(camera_positions, cv::Mat(), 3);
+  cv::PCA ground_plane(camera_positions, cv::Mat(), 0);
 
   // Eigen values
   cv::Mat eigenvalues = ground_plane.eigenvalues;
@@ -108,9 +119,9 @@ std::vector<double> PcHandler::estimateGroundPlane() {
                                      << pc.at<double>(i, 2) << "]";
   }
 
-  ground.push_back(ground_plane.eigenvectors.at<double>(2, 0));
-  ground.push_back(ground_plane.eigenvectors.at<double>(2, 1));
-  ground.push_back(ground_plane.eigenvectors.at<double>(2, 2));
+  ground.push_back(pc.at<double>(2, 0));
+  ground.push_back(pc.at<double>(2, 1));
+  ground.push_back(pc.at<double>(2, 2));
 
   return ground;
 }
@@ -141,9 +152,9 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
            cameras.begin();
        it != cameras.end(); ++it) {
     // position
-    cam_point.x = it->center.at(0) - mean_point.at(0);
-    cam_point.y = it->center.at(1) - mean_point.at(1);
-    cam_point.z = it->center.at(2) - mean_point.at(2);
+    cam_point.x = it->center.at(0);
+    cam_point.y = it->center.at(1);
+    cam_point.z = it->center.at(2);
     
     cam_cloud.push_back(cam_point);
   }
@@ -153,10 +164,10 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "camera positions");
   // Ground Plane
   pcl::ModelCoefficients coeffs;
-  coeffs.values.push_back (ground.at(0));
-  coeffs.values.push_back (ground.at(1));
-  coeffs.values.push_back (ground.at(2));
-  coeffs.values.push_back (0.0);
+  coeffs.values.push_back(ground.at(0));
+  coeffs.values.push_back(ground.at(1));
+  coeffs.values.push_back(ground.at(2));
+  coeffs.values.push_back(0.0);
   cam_viewer.addPlane(coeffs, "plane");
   cam_viewer.addCoordinateSystem (1.0);
     

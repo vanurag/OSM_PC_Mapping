@@ -34,6 +34,9 @@ int main(int num_arguments, char** arguments) {
   // mean-adjusted cloud
   pc_handle.meanAdjustCloud(pc_handle.cloud);
 
+  // mean-adjusted cameras
+  pc_handle.meanAdjustCameras(pc_handle.cameras);
+
   // Ground Plane
   pc_handle.estimateGroundPlane();
 
