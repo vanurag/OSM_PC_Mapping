@@ -126,24 +126,61 @@ std::vector<double> PcHandler::estimateGroundPlane() {
   return ground;
 }
 
+
+// Segmenting the point cloud
+void PcHandler::segmentPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>& cloud,
+                                  const pcl::PointCloud<pcl::Normal>& normals,
+                                  const double threshold) {
+
+  CHECK(cloud.size() == normals.size()) << "Point cloud and Normals size don't agree";
+  pcl::PointCloud<pcl::Normal>::const_iterator itn = normals.begin();
+  for (pcl::PointCloud<pcl::PointXYZRGB>::const_iterator itp = cloud.begin(); itp != cloud.end();
+       ++itp, ++itn) {
+    Eigen::Vector3d point_normal_vector;
+    point_normal_vector(0) = itn->normal_x;
+    point_normal_vector(1) = itn->normal_y;
+    point_normal_vector(2) = itn->normal_z;
+    Eigen::Vector3d ground_normal_vector(ground.data());
+
+    // segment out points with normals close to vertical to ground normal
+    if (point_normal_vector.dot(ground_normal_vector) < threshold) {
+      segmented_cloud.push_back(*itp);
+    }
+  }
+}
+
 // Visualization routine
-void PcHandler::visualize(bool show_cloud, bool show_cameras) {
+void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals) {
   pcl::visualization::PCLVisualizer pc_viewer("Point Cloud Viewer");
   pcl::visualization::PCLVisualizer cam_viewer("Camera Viewer");
-  pc_viewer.setBackgroundColor(0, 0, 0);
-  cam_viewer.setBackgroundColor(0, 0, 0);
   
   // Point cloud visualization
+  int v1(0);
+  pc_viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+  pc_viewer.setBackgroundColor(0, 0, 0, v1);
+  pc_viewer.addText ("Original Point Cloud", 10, 10, "v1 text", v1);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&cloud);
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud_pointer);
-  pc_viewer.addPointCloud<pcl::PointXYZRGB>(cloud_pointer, rgb, "point cloud");
+  pc_viewer.addPointCloud<pcl::PointXYZRGB>(cloud_pointer, rgb, "point cloud", v1);
   pc_viewer.setPointCloudRenderingProperties(
-      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud");
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud", v1);
   // normals
-  pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
-  pc_viewer.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>
-      (cloud_pointer, normal_pointer, 10, 0.5, "point normals");
-  pc_viewer.addCoordinateSystem(1.0);
+  if (show_normals) {
+    pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
+    pc_viewer.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>
+        (cloud_pointer, normal_pointer, 10, 0.5, "point normals");
+    pc_viewer.addCoordinateSystem(1.0);
+  }
+  // segmented point cloud
+  int v2(0);
+  pc_viewer.createViewPort (0.5, 0.0, 1.0, 1.0, v2);
+  pc_viewer.setBackgroundColor (0, 0, 0, v2);
+  pc_viewer.addText ("Segmented Point Cloud", 10, 10, "v2 text", v2);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr seg_cloud_pointer(&segmented_cloud);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> seg_rgb(seg_cloud_pointer);
+  pc_viewer.addPointCloud<pcl::PointXYZRGB>(seg_cloud_pointer, seg_rgb, "segmented point cloud", v2);
+  pc_viewer.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud", v2);
   
   // camera positions visualization
   pcl::PointCloud<pcl::PointXYZ> cam_cloud;
@@ -159,6 +196,7 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras) {
     cam_cloud.push_back(cam_point);
   }
   pcl::PointCloud<pcl::PointXYZ>::Ptr cam_cloud_pointer(&cam_cloud);
+  cam_viewer.setBackgroundColor(0, 0, 0);
   cam_viewer.addPointCloud<pcl::PointXYZ>(cam_cloud_pointer, "camera positions");
   cam_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "camera positions");

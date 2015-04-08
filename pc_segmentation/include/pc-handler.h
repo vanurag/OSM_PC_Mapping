@@ -31,8 +31,12 @@ class PcHandler {
   // estimate ground plane
   std::vector<double> estimateGroundPlane();
 
+  // Segmenting the point cloud
+  void segmentPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>& cloud,
+                         const pcl::PointCloud<pcl::Normal>& normals, const double threshold);
+
   // Visualization routine
-  void visualize(bool show_cloud, bool show_cameras);
+  void visualize(bool show_cloud, bool show_cameras, bool show_normals);
 
   // cameras
   std::vector<bundler_parser::BundlerParser::Camera> cameras;
@@ -42,6 +46,8 @@ class PcHandler {
   pcl::PointCloud<pcl::Normal> normals;
   // ground plane
   std::vector<double> ground;
+  // segmented point cloud
+  pcl::PointCloud<pcl::PointXYZRGB> segmented_cloud;
 
  private:
 
