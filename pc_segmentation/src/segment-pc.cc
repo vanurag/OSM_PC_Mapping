@@ -42,7 +42,7 @@ int main(int num_arguments, char** arguments) {
 
   // Point Normals
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&pc_handle.cloud);
-  pc_handle.estimateNormals(cloud_pointer, 0.4);
+  pc_handle.estimateNormals(cloud_pointer, FLAGS_search_radius);
 
   // segment the point cloud
   pc_handle.segmentPointCloud(pc_handle.cloud, pc_handle.normals, FLAGS_segmentation_threshold);

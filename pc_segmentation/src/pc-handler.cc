@@ -90,7 +90,6 @@ void PcHandler::estimateNormals(
 // estimate ground plane
 std::vector<double> PcHandler::estimateGroundPlane() {
 
-  LOG(INFO) << "cameras size: " << cameras.size();
   cv::Mat camera_positions;
   //camera_positions.create(static_cast<int>(cameras.size()), 3, CV_64F);
   for (auto camera : cameras) {
@@ -165,11 +164,10 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   pc_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud", v1);
   // normals
+  pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
   if (show_normals) {
-    pcl::PointCloud<pcl::Normal>::Ptr normal_pointer(&normals);
     pc_viewer.addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal>
-        (cloud_pointer, normal_pointer, 10, 0.5, "point normals");
-    pc_viewer.addCoordinateSystem(1.0);
+        (cloud_pointer, normal_pointer, 10, 0.5, "point normals", v1);
   }
   // segmented point cloud
   int v2(0);

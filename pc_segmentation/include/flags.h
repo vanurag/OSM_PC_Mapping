@@ -11,5 +11,6 @@ DECLARE_bool(show_cloud);
 DECLARE_bool(show_cameras);
 DECLARE_bool(show_normals);
 DECLARE_double(segmentation_threshold);
+DECLARE_double(search_radius);
 
 #endif // PC_HANDLER_FLAGS_H_
