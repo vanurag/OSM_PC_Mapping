@@ -128,7 +128,6 @@ std::vector<double> PcHandler::estimateGroundPlane() {
 
 // Segmenting the point cloud
 void PcHandler::segmentPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>& cloud,
-                                  const pcl::PointCloud<pcl::Normal>& normals,
                                   const double threshold) {
 
   CHECK(cloud.size() == normals.size()) << "Point cloud and Normals size don't agree";
@@ -148,6 +147,27 @@ void PcHandler::segmentPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>& cloud
   }
 }
 
+
+// downproject the point cloud onto the ground plane to generate outline
+void PcHandler::generateOutline(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud_pointer) {
+  pcl::ProjectInliers<pcl::PointXYZRGB> proj;
+  proj.setModelType(pcl::SACMODEL_PLANE);
+
+  // input cloud
+  proj.setInputCloud(cloud_pointer);
+
+  // ground plane
+  pcl::ModelCoefficients::Ptr model_coeffs_pointer(new pcl::ModelCoefficients ());
+  model_coeffs_pointer->values.resize(4);
+  model_coeffs_pointer->values[0] = ground.at(0);
+  model_coeffs_pointer->values[1] = ground.at(1);
+  model_coeffs_pointer->values[2] = ground.at(2);
+  model_coeffs_pointer->values[3] = 0.0;
+  proj.setModelCoefficients(model_coeffs_pointer);
+  proj.filter(cloud_outline);
+}
+
+
 // Visualization routine
 void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals) {
   pcl::visualization::PCLVisualizer pc_viewer("Point Cloud Viewer");
@@ -155,7 +175,7 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   
   // Point cloud visualization
   int v1(0);
-  pc_viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+  pc_viewer.createViewPort(0.0, 0.0, 0.5, 0.5, v1);
   pc_viewer.setBackgroundColor(0, 0, 0, v1);
   pc_viewer.addText ("Original Point Cloud", 10, 10, "v1 text", v1);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&cloud);
@@ -171,7 +191,7 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   }
   // segmented point cloud
   int v2(0);
-  pc_viewer.createViewPort (0.5, 0.0, 1.0, 1.0, v2);
+  pc_viewer.createViewPort (0.5, 0.0, 1.0, 0.5, v2);
   pc_viewer.setBackgroundColor (0, 0, 0, v2);
   pc_viewer.addText ("Segmented Point Cloud", 10, 10, "v2 text", v2);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr seg_cloud_pointer(&segmented_cloud);
@@ -179,6 +199,21 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   pc_viewer.addPointCloud<pcl::PointXYZRGB>(seg_cloud_pointer, seg_rgb, "segmented point cloud", v2);
   pc_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud", v2);
+  // point cloud outline downprojected onto the ground plane
+  int v3(0);
+  pc_viewer.createViewPort (0.0, 0.5, 1.0, 1.0, v3);
+  pc_viewer.setBackgroundColor (0, 0, 0, v3);
+  pc_viewer.addText ("Point Cloud Outline", 10, 10, "v3 text", v3);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr outline_pointer(&cloud_outline);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> outline_rgb(outline_pointer);
+  pc_viewer.addPointCloud<pcl::PointXYZRGB>(outline_pointer, outline_rgb,
+                                            "point cloud outline", v3);
+  pc_viewer.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud outline", v3);
+  // view facing downward
+  LOG(INFO) << "up-vector: " << ground.at(0) << " " << ground.at(1) << " " << ground.at(2);
+  pc_viewer.setCameraPosition(100.0*ground.at(0), 100.0*ground.at(1), 100.0*ground.at(2),
+                              0.0, 0.0, 0.0);
   
   // camera positions visualization
   pcl::PointCloud<pcl::PointXYZ> cam_cloud;
@@ -206,9 +241,12 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   coeffs.values.push_back(0.0);
   cam_viewer.addPlane(coeffs, "plane");
   cam_viewer.addCoordinateSystem (1.0);
+  // view facing downward
+  cam_viewer.setCameraPosition(100.0*ground.at(0), 100.0*ground.at(1), 100.0*ground.at(2),
+                               0.0, 0.0, 0.0);
     
-  pc_viewer.initCameraParameters();
-  cam_viewer.initCameraParameters();
+  //pc_viewer.initCameraParameters();
+  //cam_viewer.initCameraParameters();
   
   while ( (!pc_viewer.wasStopped()) && (!cam_viewer.wasStopped()) ) {
     pc_viewer.spinOnce (100);

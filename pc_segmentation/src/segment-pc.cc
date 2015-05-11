@@ -6,7 +6,7 @@ using namespace bundler_parser;
 using namespace pc_handler;
 
 int main(int num_arguments, char** arguments) {
-  
+
   google::InitGoogleLogging(arguments[0]);
   google::ParseCommandLineFlags(&num_arguments, &arguments, true);
   google::InstallFailureSignalHandler();
@@ -20,7 +20,7 @@ int main(int num_arguments, char** arguments) {
     camera_indices.push_back(i);
   }
   pc_handle.cameras = parser.getCameras(camera_indices);
-  
+
   // get 3d point data
   std::vector<int> point_indices;
   for (int i = 0; i < parser.num_points; ++i) {
@@ -45,7 +45,11 @@ int main(int num_arguments, char** arguments) {
   pc_handle.estimateNormals(cloud_pointer, FLAGS_search_radius);
 
   // segment the point cloud
-  pc_handle.segmentPointCloud(pc_handle.cloud, pc_handle.normals, FLAGS_segmentation_threshold);
+  pc_handle.segmentPointCloud(pc_handle.cloud, FLAGS_segmentation_threshold);
+
+  // downproject the point cloud onto the ground plane to generate outline
+  pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr segmented_cloud_pointer(&pc_handle.segmented_cloud);
+  pc_handle.generateOutline(segmented_cloud_pointer);
 
   // visualize
   pc_handle.visualize(FLAGS_show_cloud, FLAGS_show_cameras, FLAGS_show_normals);

@@ -12,6 +12,7 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
+#include <pcl/filters/project_inliers.h>
 
 // STL headers.
 #include <cmath>
