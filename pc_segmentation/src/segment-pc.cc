@@ -40,8 +40,12 @@ int main(int num_arguments, char** arguments) {
   // Ground Plane
   pc_handle.estimateGroundPlane();
 
-  // Point Normals
+  // transform point cloud such that the normal is along z-axis
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_pointer(&pc_handle.cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cam_cloud_pointer(&pc_handle.cam_cloud);
+  pc_handle.transformPointCloud(cloud_pointer, cam_cloud_pointer);
+
+  // Point Normals
   pc_handle.estimateNormals(cloud_pointer, FLAGS_search_radius);
 
   // segment the point cloud
@@ -53,7 +57,6 @@ int main(int num_arguments, char** arguments) {
 
   // visualize
   pc_handle.visualize(FLAGS_show_cloud, FLAGS_show_cameras, FLAGS_show_normals);
-  
 
   return 0;
 }

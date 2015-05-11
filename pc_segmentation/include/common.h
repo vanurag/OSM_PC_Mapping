@@ -13,6 +13,8 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/project_inliers.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/common/transforms.h>
 
 // STL headers.
 #include <cmath>
@@ -37,5 +39,6 @@
 
 // OpenCV
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/eigen.hpp>
 
 #endif // PC_SEGMENTATION_COMMON_H_

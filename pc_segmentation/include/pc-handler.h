@@ -31,6 +31,10 @@ class PcHandler {
   // estimate ground plane
   std::vector<double> estimateGroundPlane();
 
+  // transform point cloud such that the normal is along z-axis
+  void transformPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud_pointer,
+                           pcl::PointCloud<pcl::PointXYZ>::Ptr& cam_cloud_pointer);
+
   // Segmenting the point cloud
   void segmentPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>& cloud,
                          const double threshold);
@@ -53,6 +57,8 @@ class PcHandler {
   std::vector<double> ground;
   // segmented point cloud
   pcl::PointCloud<pcl::PointXYZRGB> segmented_cloud;
+  // point cloud of camera locations
+  pcl::PointCloud<pcl::PointXYZ> cam_cloud;
 
  private:
 

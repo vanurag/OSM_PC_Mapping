@@ -91,6 +91,7 @@ void PcHandler::estimateNormals(
 std::vector<double> PcHandler::estimateGroundPlane() {
 
   cv::Mat camera_positions;
+  pcl::PointXYZ cam_point;
   //camera_positions.create(static_cast<int>(cameras.size()), 3, CV_64F);
   for (auto camera : cameras) {
     cv::Mat temp(camera.center);
@@ -98,8 +99,12 @@ std::vector<double> PcHandler::estimateGroundPlane() {
     if (pos.at<double>(0, 0) != 0.0 || pos.at<double>(0, 1) != 0.0 || pos.at<double>(0, 2) != 0.0) {
       //LOG(INFO) << pos.at<double>(0, 0) << " " << pos.at<double>(0, 1) << " " << pos.at<double>(0, 2);
       camera_positions.push_back(pos);
+      // cam cloud
+      cam_point.x = pos.at<double>(0, 0);
+      cam_point.y = pos.at<double>(0, 1);
+      cam_point.z = pos.at<double>(0, 2);
+      cam_cloud.push_back(cam_point);
     }
-    //camera_positions.push_back(pos);
   }
 
   LOG(INFO) << "Solving PCA..." << camera_positions.size();
@@ -122,7 +127,44 @@ std::vector<double> PcHandler::estimateGroundPlane() {
   ground.push_back(pc.at<double>(2, 1));
   ground.push_back(pc.at<double>(2, 2));
 
+  LOG(INFO) << "up-vector: " << ground.at(0) << " " << ground.at(1) << " " << ground.at(2);
+
   return ground;
+}
+
+
+// transform point cloud such that the normal is along z-axis
+void PcHandler::transformPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud_pointer,
+                                    pcl::PointCloud<pcl::PointXYZ>::Ptr& cam_cloud_pointer) {
+
+  Eigen::Matrix4d transformation = Eigen::Matrix4d::Identity();
+  Eigen::Vector3d original_normal;
+  original_normal(0) = ground.at(0);
+  original_normal(1) = ground.at(1);
+  original_normal(2) = ground.at(2);
+  Eigen::Vector3d desired_normal; // Z-axis
+  desired_normal(0) = 0.0;
+  desired_normal(1) = 0.0;
+  desired_normal(2) = 1.0;
+
+  double rot_angle =  acos(original_normal.dot(desired_normal));
+  Eigen::Vector3d rot_axis = original_normal.cross(desired_normal);
+  Eigen::Matrix3d rotation;
+  rotation = Eigen::AngleAxisd(rot_angle, rot_axis);
+  transformation.block<3, 3>(0, 0) = rotation;
+
+  // transform ground
+  Eigen::Vector3d transformed_ground = rotation*original_normal;
+  ground.at(0) = transformed_ground(0);
+  ground.at(1) = transformed_ground(1);
+  ground.at(2) = transformed_ground(2);
+  LOG(INFO) << "up-vector after transformation: " << ground.at(0) << " " << ground.at(1) << " "
+      << ground.at(2);
+
+  // transform point cloud
+  pcl::transformPointCloud(*cloud_pointer, *cloud_pointer, transformation);
+  // transform camera locations
+  pcl::transformPointCloud(*cam_cloud_pointer, *cam_cloud_pointer, transformation);
 }
 
 
@@ -211,23 +253,10 @@ void PcHandler::visualize(bool show_cloud, bool show_cameras, bool show_normals)
   pc_viewer.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "point cloud outline", v3);
   // view facing downward
-  LOG(INFO) << "up-vector: " << ground.at(0) << " " << ground.at(1) << " " << ground.at(2);
   pc_viewer.setCameraPosition(100.0*ground.at(0), 100.0*ground.at(1), 100.0*ground.at(2),
                               0.0, 0.0, 0.0);
   
   // camera positions visualization
-  pcl::PointCloud<pcl::PointXYZ> cam_cloud;
-  pcl::PointXYZ cam_point;
-  for (std::vector<bundler_parser::BundlerParser::Camera>::iterator it = 
-           cameras.begin();
-       it != cameras.end(); ++it) {
-    // position
-    cam_point.x = it->center.at(0);
-    cam_point.y = it->center.at(1);
-    cam_point.z = it->center.at(2);
-    
-    cam_cloud.push_back(cam_point);
-  }
   pcl::PointCloud<pcl::PointXYZ>::Ptr cam_cloud_pointer(&cam_cloud);
   cam_viewer.setBackgroundColor(0, 0, 0);
   cam_viewer.addPointCloud<pcl::PointXYZ>(cam_cloud_pointer, "camera positions");
