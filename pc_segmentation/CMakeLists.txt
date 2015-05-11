@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(pc_segmentation)
 
+set(CMAKE_BUILD_TYPE Release)
 find_package(catkin_simple REQUIRED)
 find_package(opencv2_catkin REQUIRED)
 find_package(PCL 1.7 REQUIRED)

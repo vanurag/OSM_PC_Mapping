@@ -32,5 +32,5 @@ Run:
 Segment Point Cloud:
 
 ```bash
-devel/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bundler_file=[full_path]/file_name.out --show_cameras=true --show_cloud=true --show_normals=false --segmentation_threshold=0.001 --search_radius=0.4
+devel/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bundler_file=[full_path]/file_name.out --outline_file_path=[storage_path] --show_cameras=true --show_cloud=true --show_normals=false --segmentation_threshold=0.001 --search_radius=0.4
 ```
