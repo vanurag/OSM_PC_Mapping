@@ -12,6 +12,6 @@ DECLARE_bool(show_cameras);
 DECLARE_bool(show_normals);
 DECLARE_double(segmentation_threshold);
 DECLARE_double(search_radius);
-DECLARE_string(outline_file);
+DECLARE_string(outline_file_path);
 
 #endif // PC_HANDLER_FLAGS_H_

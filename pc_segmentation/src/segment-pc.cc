@@ -56,9 +56,9 @@ int main(int num_arguments, char** arguments) {
   pc_handle.generateOutline(segmented_cloud_pointer);
 
   // save point clouud outline
-  pcl::io::savePCDFileASCII(FLAGS_outline_file+"/outline.pcd", pc_handle.cloud_outline);
+  pcl::io::savePCDFileASCII(FLAGS_outline_file_path+"/outline.pcd", pc_handle.cloud_outline);
   LOG(INFO) << "Saved " << pc_handle.cloud_outline.points.size() << " data points to "
-      << FLAGS_outline_file+"/outline.pcd";
+      << FLAGS_outline_file_path+"/outline.pcd";
 
   // visualize
   pc_handle.visualize(FLAGS_show_cloud, FLAGS_show_cameras, FLAGS_show_normals);
