@@ -6,18 +6,19 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{hyperref}
+% \usepackage{natbib}
 
 % Include other packages here, before hyperref.
 
 % If you comment hyperref and then uncomment it, you should delete
 % egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
 % run, let it finish, and you should be clear).
-%\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\newcommand{\matr}[1]{\mathbf{#1}} % undergraduate algebra version
 
 \cvprfinalcopy % *** Uncomment this line for the final submission
 
-\def\cvprPaperID{****} % *** Enter the 3DV Paper ID here
+\def\cvprPaperID{0001} % *** Enter the 3DV Paper ID here
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
@@ -72,9 +73,9 @@ Of concern for us is only one mapped entity, the building. All points in OSM are
 
 In order to adjust the point cloud to the obtained ground truth, we discretized the polygons to point clouds themselves by creating points along the polygon edges in a certain distance. During the Iterative Closest Point matching these points will be matched against the point cloud and provide an error distance.
 
-The OSM data is in a coordinate format consisting of a latitude/longitude pair. This representation maps coordinates to the Globe, which has a spherical shape. However, we would like to work on a 2D surface. The size of the registration is reasonably small to obtain a 2D representation that falls into the boundaries of acceptable error.
+The OSM data is in the standard latitude/longitude coordinate format. This representation maps coordinates to the globe, which has a spherical shape. However, we would like to work on a 2D surface. The size of the registration is reasonably small to obtain a 2D representation that falls into the boundaries of acceptable error.
 
-There are a number of methods on how to convert coordinates to a 2D representation, which is a topic that has been explored for a long time since large-scale mapping has taken place globally. The methods can be divided into two different categories:
+There are a number of methods on how to convert coordinates to a 2D representation, which is a topic that has been explored for a long time since large-scale mapping has taken place globally. An exhaustive overview can be found in Snyder (1987)~\cite{Snyder1987}. The methods can be divided into two different categories:
 
 \begin{itemize}
    \item \textbf{Conformal} This category of mappings preserves angles as observed in the real world (ie. the local angles are preserved). 
@@ -84,9 +85,11 @@ There are a number of methods on how to convert coordinates to a 2D representati
    \item \textbf{Shortest Route} Shortest route is observable 
 \end{itemize}
 
-Since the sphere cannot be flattened out without distortion (ie. the sphere is a non-developable surface) not all of the above properties can hold for a projection.
+Since the sphere cannot be flattened out without distortion (ie. the sphere is a non-developable surface) not all of the above properties can hold for a projection at the same time.
 
-For our application of registering a 2D point cloud on the map, we chose to use the Universal Transverse Mercator projection, which preserves the angles and shapes, a property we deemed useful for our application.
+For our application of registering a 2D point cloud on the map, we chose to use the Universal Transverse Mercator (UTM) projection, which preserves the angles and shapes, a property we deemed useful for our application.
+
+Contrary to other map projections, UTM is not a single projection but rather divides the globe into 60 different zones.
 
 \section{Registering the Point Cloud}
 
@@ -98,9 +101,55 @@ The input to the ICP algorithm in general is two pointclouds, one called the ref
 
 Several important drawbacks of ICP are that it usually only provides rigid transformations (i.e. scale and shear factors are not affected). Allowing infinite scale the ICP solution would scale down to only one point with a distance of zero, as all points would be incident with that one. Another problem is that ICP, without good initialisation, tends to convertge to a local minima. Therefore it is paramount to have an initial rotation and translation that matches the reference somewhat. % We are currently able to do this based on the GPS positions in our source data which indicate a 
 
+For our implementation, the existing \texttt{libpointmatcher}\cite{Pomerleau12comp} library was utilized to provide a framework for customizable ICP algorithms.
 
-Some important limitation are that it can only perform rigid transformations.
+Both the map data as well as the point cloud is normalized and scaled to an arbitray scale, so that the leftmost point is coincident with the (0, 0) coordinate.
 
+\subsection{ICP process}
+
+As implemented, the ICP implementation uses a KD-Tree with a variable number of neighbors it considers as potential neighbors. The nearest neigbor is accepted as neighbor and a transformation is searched that decreases the distance (error) between all neighbors. 
+
+Generally, there are two different popular ICP variants: Point-to-Point and Point-to-Plane, with the latter usually performing better. However, since we are operating in the 2D space, there are no planes except for the ground plane to be found. Thus we decided to use the more approachable point-to-point algorithm.
+
+One ICP iteration consists of 4 steps:
+
+\begin{itemize}
+   \item We search a KD-Tree structure for the nearest neighbors and weight or reject them depending on the distance
+   \item The error is calculated
+   \item Using the error, a singular value decomposition is calculated
+   \item The rotation matrix is $\matr{R} =\matr{U} * \matr{V}^{\intercal}$
+      \\ The translation vector is $\matr{T} = \matr{A} - \matr{R} * \matr{B}$
+      \item Repeat process until either only a very small change between iterations is observed or the error is sufficiently small
+\end{itemize}
+
+\subsection{Filtering data}
+
+To further reduce the amount of noise, we implemented a filtering chain, consisting of 
+
+\begin{itemize}
+   \item Any given point needs at least 50 neighbors in a radius of 2 meters to be considered a valid measurement
+   \item Statistical outliers are removed with a mean of 8 and a standard deviation of 1. This further removes outliers
+   \item Only 1/8 of all remaining points are randomly chosen to reduce the computational load
+\end{itemize}
+
+\subsection{Initial alignment}
+
+As stated before, the initial alignment of the two pointclouds is crucial for successful ICP matching. Therefore we compute the bounding boxes of the different structures found in the point cloud. We then proceed to align the bounding boxes as good as possible by scaling, shearing, rotating and translating.
+
+To obtain the bounding boxes from the denoised measurements we 
+
+\begin{itemize}
+   \item Traverse the KD tree and group structures by neighbors in a certain threshold
+   \item Calculate bounding box and shrink inward slightly to match measurements better
+   \item 
+\end{itemize}
+
+
+
+{\small
+\bibliographystyle{ieee}
+\bibliography{egbib}
+}
 
 
 \end{document}
