@@ -155,7 +155,25 @@ To further reduce the amount of noise, we implemented a filtering chain, consist
 \subsection{Initial alignment}
 
 \begin{figure}
-   \item 
+\begin{subfigure}{.5\linewidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/houghlines6.jpg}
+  \caption{Hough corner detector}
+  \label{fig:hough}
+\end{subfigure}%
+\begin{subfigure}{.5\linewidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/harris.png}
+  \caption{Harris corner detector}
+  \label{fig:harris}
+\end{subfigure}
+\\
+\begin{subfigure}{1\linewidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/ransac_corner.png}
+  \caption{RANSAC based corner detection}
+  \label{fig:ransac_corner}
+\end{subfigure}
 
 \end{figure}
 
