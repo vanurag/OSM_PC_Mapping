@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 % \usepackage{natbib}
+\usepackage{subcaption}
 
 % Include other packages here, before hyperref.
 
@@ -62,7 +63,7 @@ Several attempts deal with a similar problem, such as ...
 
 \begin{figure}[h]
    \centering
-   \includegraphics[width=\linewidth]{images/OSM_Mashup.png}
+   \includegraphics[width=\linewidth]{images/osm_map.png}
    \caption{OSM overlaid with editor interface}
    \label{fig:figure1}
 \end{figure}
@@ -116,13 +117,32 @@ One ICP iteration consists of 4 steps:
 \begin{itemize}
    \item We search a KD-Tree structure for the nearest neighbors and weight or reject them depending on the distance
    \item The error is calculated
-   \item Using the error, a singular value decomposition is calculated
+   \item Using the error, the singular value decomposition (SVD) is calculated
    \item The rotation matrix is $\matr{R} =\matr{U} * \matr{V}^{\intercal}$
       \\ The translation vector is $\matr{T} = \matr{A} - \matr{R} * \matr{B}$
       \item Repeat process until either only a very small change between iterations is observed or the error is sufficiently small
 \end{itemize}
 
 \subsection{Filtering data}
+
+
+\begin{figure}
+
+\begin{subfigure}{.5\linewidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Selection_031.png}
+  \caption{Original input}
+  \label{fig:sfig1}
+\end{subfigure}%
+\begin{subfigure}{.5\linewidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Selection_032.png}
+  \caption{Output after filter}
+  \label{fig:sfig2}
+\end{subfigure}
+
+\end{figure}
+
 
 To further reduce the amount of noise, we implemented a filtering chain, consisting of 
 
@@ -134,17 +154,32 @@ To further reduce the amount of noise, we implemented a filtering chain, consist
 
 \subsection{Initial alignment}
 
-As stated before, the initial alignment of the two pointclouds is crucial for successful ICP matching. Therefore we compute the bounding boxes of the different structures found in the point cloud. We then proceed to align the bounding boxes as good as possible by scaling, shearing, rotating and translating.
+\begin{figure}
+   \item 
 
-To obtain the bounding boxes from the denoised measurements we 
+\end{figure}
+
+As stated before, the initial alignment of the two pointclouds is crucial for successful ICP matching. 
+In order to find a good initial alignment, we try to find corner points in the measured data. 
+
+There exist a number of corner detectors that are well researched. Some of the most notable ones, the Hough-transform~\cite{illingworth1988survey} and the Harris-detector~\cite{harris1988combined} were tried, but didn't deliver sufficient results. The properties of our data are also not extremely well suited for these algorithms which were primarily developed for images. 
+
+We developed an approach based on the Random Sample Consensus algorithm (RANSAC)~\cite{fischler1981random}. RANSAC is able to detect lines in a robust way. Our process looks like this:
 
 \begin{itemize}
-   \item Traverse the KD tree and group structures by neighbors in a certain threshold
-   \item Calculate bounding box and shrink inward slightly to match measurements better
-   \item 
-\end{itemize}
+    \item Choose random point from point cloud
+    \item Select nearest 100 neighbors from kd-tree and insert into sub point cloud
+    \item Find best line with RANSAC
+    \item Remove all inliers from sub point cloud
+    \item If more than threshold points remaining, find second best line by running RANSAC again
+    \item Check angle between both lines (if angle to small or wide, reject)\footnote{Rejecting intersection points based on angle is possible for us since we are primarily interested in corners that meet at about 90 degree. This is due to the fact that we are working with city scapes.}
+    \item If line is found, calculate intersection point
+    \item Reject if intersection point is not close to points in sub point cloud
+\end{itemize} 
 
+After a certain, arbitray numbers of corners is found, we use the map of corners to match the OpenStreetMap data. Therefore we randomly select 3 points from the corner map, and calculate a corresponding transformation to three points on the OSM data. This makes it possible to calculate an error and improve or reject several initial transformations.
 
+We then choose the best transformation and use it as intial transformation for the ICP.
 
 {\small
 \bibliographystyle{ieee}
