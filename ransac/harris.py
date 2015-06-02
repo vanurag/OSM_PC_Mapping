@@ -4,10 +4,11 @@ import itertools
 import pprint
 
 from matplotlib import pyplot as plt
-#
-# line segment intersection using vectors
-# see Computer Graphics by F.S. Hill
-#
+
+from intersec import seg_intersect
+
+# calculate and display harris corners
+
 img = cv2.imread('Selection_032.png')
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 # edges = cv2.Canny(gray,50,150,apertureSize = 3)

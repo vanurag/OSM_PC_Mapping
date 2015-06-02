@@ -1,18 +1,17 @@
-import pcl
-import numpy as np
-
-
 import sys
 sys.setrecursionlimit(10000)
 import random
-
 import array
-
 import IPython
-
 import blist
 
 from matplotlib import pyplot as plt
+import pcl
+import numpy as np
+
+#
+# Segment point cloud based on k-nearest neigbours
+#
 
 p = pcl.PointCloud()
 p.from_file(b"filtered_output.pcd")
@@ -23,14 +22,14 @@ kd = p.make_kdtree_flann()
 
 # this should find all bounding boxes, hopefully
 # indexes = array.array('i', range(0, p.size))
+
 indexes = blist.sortedlist(range(0, p.size))
 print(indexes)
 THRESHHOLD = 1 ** 2
 
-# visited_idx = blist.sortedlist()
-
 groups = []
 visited_idx = blist.sortedlist()
+
 def find_group(idx, res):
 	if idx in visited_idx:
 		return res

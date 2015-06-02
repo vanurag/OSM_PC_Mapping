@@ -71,6 +71,9 @@ main (int argc, char** argv)
           << std::endl;
 
 
+  // Implementation of further filter methods 
+  // To reduce amount of point cloud data
+
   pcl::RadiusOutlierRemoval<pcl::PointXYZ> filter(false);
   filter.setInputCloud(rs_filtered_cloud);
   filter.setRadiusSearch(2);

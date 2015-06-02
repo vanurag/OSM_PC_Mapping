@@ -1,4 +1,8 @@
 import numpy as np
+
+# adapted from http://stackoverflow.com/questions/3252194/numpy-and-line-intersections
+# Author: Hamish Grubijan
+
 #
 # line segment intersection using vectors
 # see Computer Graphics by F.S. Hill
@@ -12,6 +16,7 @@ def perp( a ) :
 # line segment a given by endpoints a1, a2
 # line segment b given by endpoints b1, b2
 # return 
+
 def seg_intersect(a1,a2, b1,b2) :
     da = a2-a1
     db = b2-b1
