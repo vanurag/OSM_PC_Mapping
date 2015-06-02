@@ -275,14 +275,21 @@ We developed an approach based on the Random Sample Consensus algorithm (RANSAC)
     \item Find best line with RANSAC
     \item Remove all inliers from sub point cloud
     \item If more than threshold points remaining, find second best line by running RANSAC again
-    \item Check angle between both lines (if angle to small or wide, reject)\footnote{Rejecting intersection points based on angle is possible for us since we are primarily interested in corners that meet at about 90 degree. This is due to the fact that we are working with city scapes.}
+    \item Check angle between both lines (if angle to small or wide, reject)\footnote{Rejecting intersection points based on angle is possible for us since we are primarily interested in corners that meet at about 90 degree. This is due to the fact that we are working with city scapes.} 
     \item If line is found, calculate intersection point
-    \item Reject if intersection point is not close to points in sub point cloud
+    % \item Reject if intersection point is not close to points in sub point cloud
 \end{itemize} 
 
 After a certain, arbitray numbers of corners is found, we use the map of corners to match the OpenStreetMap data. Therefore we randomly select 3 points from the corner map, and calculate a corresponding transformation to three randomly selected points on the OSM data. This makes it possible to calculate an error and improve or reject several initial transformations.
 
 We then choose the best transformation and use it as intial transformation for the ICP.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/goodmatch.png}
+  \caption{Fitted after 5000000 iterations}
+  \label{fig:goodmatch}
+\end{figure}
 
 \section{Conclusion}
 
