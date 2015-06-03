@@ -205,7 +205,7 @@ One ICP iteration consists of 4 steps:
    \item Using the error, the singular value decomposition (SVD) is calculated
    \item The rotation matrix is $\matr{R} =\matr{U} * \matr{V}^{\intercal}$
       \\ The translation vector is $\matr{T} = \matr{A} - \matr{R} * \matr{B}$
-      \item Repeat process until either only a very small change between iterations is observed or the error is sufficiently small
+    \item Repeat process until either only a very small change between iterations is observed or the error is sufficiently small
 \end{itemize}
 
 \subsection{Filtering data}
@@ -292,6 +292,15 @@ We then choose the best transformation and use it as intial transformation for t
 \end{figure}
 
 \section{Conclusion}
+
+\begin{figure}
+
+  \centering
+  \includegraphics[width=.8\linewidth]{images/result_icp.png}
+  \caption{Result from ICP\\Blue lines are considered outliers by algorithm, and red lines indicate matched neighbour}
+  \label{fig:icpresult}
+
+\end{figure}
 
 The normal estimation and subsequent filtering provided data that was very well suitable for fitting to underlying building outline data. 
 What proved a problem is that ICP implementations usually do not respect scaling or shearing as issue. The corner matching approach we implemented would theoretically work well, however, due to the scale of the problem the brute force approach we implemented was too inefficient to find a good match in reasonable time. 
