@@ -65,7 +65,7 @@ kd_osm = cKDTree(osm_corners[:, 0:2])
 prev_distance = 100000000000000000000000000
 best_trafo = None
 loop_i = 0
-while prev_distance > 5000 and loop_i < 500000:
+while prev_distance > 5000 and loop_i < 5000000:
 	loop_i += 1
 	choice_a = np.random.choice(img_corners.shape[0], 3)
 
