@@ -34,3 +34,23 @@ Segment Point Cloud:
 ```bash
 devel/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bundler_file=[full_path]/file_name.out --outline_file_path=[storage_path] --show_cameras=true --show_cloud=true --show_normals=false --segmentation_threshold=0.001 --search_radius=0.4
 ```
+
+### Point Cloud matching
+
+#### Obtaining Ground truth
+
+Execute osm/visualization.py
+
+#### Filtering
+
+In folder ransac, `cmake .`, `make` and then executable filters will yield filtered output from `test_pcd.pcd` and save it as `filtered_output.pcd`.
+
+Corners are found by using `corner_extract.py` on filtered output.
+
+Then corners can be matched by using `match_corners.py` (note long runtime since dumb bruteforce method).
+
+#### ICP
+
+In libpointmatcher folder, executables are placed in libpointmatcher/examples.
+
+Execute `./pmicp --config config.yaml --initTranslation 80,100 ../data/cl.csv ../data/cl2.csv` to generate a mapping based on a Point-to-Point ICP.
