@@ -36,6 +36,16 @@ devel/lib/pc_segmentation/segment_pc --alsologtostderr --colorlogtostderr --bund
 ```
 
 ### Point Cloud matching
+Dependencies:
+
+```
+numpy
+python-pcl
+opencv-python
+scipy
+matplotlib
+```
+
 
 #### Obtaining Ground truth
 
@@ -53,4 +63,6 @@ Then corners can be matched by using `match_corners.py` (note long runtime since
 
 In libpointmatcher folder, executables are placed in libpointmatcher/examples.
 
-Execute `./pmicp --config config.yaml --initTranslation 80,100 ../data/cl.csv ../data/cl2.csv` to generate a mapping based on a Point-to-Point ICP.
+Execute `./pmicp --config config.yaml --initTranslation 70,100 ../data/cl.csv ../data/cl2.csv` to generate a mapping based on a Point-to-Point ICP.
+
+The results can be inspected by opening ParaView and looking at the resulting visttep-files.
