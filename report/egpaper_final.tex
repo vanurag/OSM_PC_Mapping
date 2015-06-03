@@ -165,7 +165,7 @@ The OSM data is in the standard latitude/longitude coordinate format. This repre
 There are a number of methods on how to convert coordinates to a 2D representation, which is a topic that has been explored for a long time since large-scale mapping has taken place globally. An exhaustive overview can be found in Snyder (1987)~\cite{Snyder1987}. The methods can be divided into two different categories:
 
 \begin{itemize}
-   \item \textbf{Conformal} This category of mappings preserves angles as observed in the real world (ie. the local angles are preserved). 
+   \item \textbf{Conformal} This category of mappings preserves angles as observed in the real world (i.e. the local angles are preserved). 
    \item \textbf{Equiareal} Retains equal area
    \item \textbf{Equidistant} Preserving distance
    \item \textbf{Azimuthal} Preserving Direction
@@ -186,22 +186,22 @@ Therefore we use ``Iterative Closest Point'' (ICP) matching algorithm. As the na
 
 The input to the ICP algorithm in general is two pointclouds, one called the reference and the other source. The source should be aligned to the reference cloud. The output of the algorithm is a transformation matrix in 2 or 3 dimensions. Furthermore, the algorithm needs to be supplied with a stop condition, for example a maximum number of iterations or a minimal size of change between iterations, which indicates that the algorithm has converged to a minima.
 
-Several important drawbacks of ICP are that it usually only provides rigid transformations (i.e. scale and shear factors are not affected). Allowing infinite scale the ICP solution would scale down to only one point with a distance of zero, as all points would be incident with that one. Another problem is that ICP, without good initialisation, tends to convertge to a local minima. Therefore it is paramount to have an initial rotation and translation that matches the reference somewhat. % We are currently able to do this based on the GPS positions in our source data which indicate a 
+Several important drawbacks of ICP are that it usually only provides rigid transformations (i.e. scale and shear factors are not affected). Allowing infinite scale the ICP solution would scale down to only one point with a distance of zero, as all points would be incident with that one. Another problem is that ICP, without good initialisation, tends to converge to a local minima. Therefore it is paramount to have an initial rotation and translation that matches the reference somewhat. % We are currently able to do this based on the GPS positions in our source data which indicate a 
 
 For our implementation, the existing \texttt{libpointmatcher}\cite{Pomerleau12comp} library was utilized to provide a framework for customizable ICP algorithms.
 
-Both the map data as well as the point cloud is normalized and scaled to an arbitray scale, so that the leftmost point is coincident with the (0, 0) coordinate.
+Both the map data as well as the point cloud is normalized and scaled to an arbitrary scale, so that the leftmost point is coincident with the (0, 0) coordinate.
 
 \subsection{ICP process}
 
-As implemented, the ICP implementation uses a KD-Tree with a variable number of neighbors it considers as potential neighbors. The nearest neigbor is accepted as neighbor and a transformation is searched that decreases the distance (error) between all neighbors. 
+As implemented, the ICP implementation uses a KD-Tree with a variable number of neighbours it considers as potential neighbours. The nearest neighbour is accepted as neighbour and a transformation is searched that decreases the distance (error) between all neighbours. 
 
 Generally, there are two different popular ICP variants: Point-to-Point and Point-to-Plane, with the latter usually performing better. However, since we are operating in the 2D space, there are no planes except for the ground plane to be found. Thus we decided to use the more approachable point-to-point algorithm.
 
 One ICP iteration consists of 4 steps:
 
 \begin{itemize}
-   \item We search a KD-Tree structure for the nearest neighbors and weight or reject them depending on the distance
+   \item We search a KD-Tree structure for the nearest neighbours and weight or reject them depending on the distance
    \item The error is calculated
    \item Using the error, the singular value decomposition (SVD) is calculated
    \item The rotation matrix is $\matr{R} =\matr{U} * \matr{V}^{\intercal}$
@@ -233,7 +233,7 @@ One ICP iteration consists of 4 steps:
 To further reduce the amount of noise, we implemented a filtering chain, consisting of 
 
 \begin{itemize}
-   \item Any given point needs at least 50 neighbors in a radius of 2 meters to be considered a valid measurement
+   \item Any given point needs at least 50 neighbours in a radius of 2 meters to be considered a valid measurement
    \item Statistical outliers are removed with a mean of 8 and a standard deviation of 1. This further removes outliers
    \item Only 1/8 of all remaining points are randomly chosen to reduce the computational load
 \end{itemize}
@@ -272,7 +272,7 @@ We developed an approach based on the Random Sample Consensus algorithm (RANSAC)
 
 \begin{itemize}
     \item Choose random point from point cloud
-    \item Select nearest 100 neighbors from kd-tree and insert into sub point cloud
+    \item Select nearest 100 neighbours from kd-tree and insert into sub point cloud
     \item Find best line with RANSAC
     \item Remove all inliers from sub point cloud
     \item If more than threshold points remaining, find second best line by running RANSAC again
@@ -281,9 +281,9 @@ We developed an approach based on the Random Sample Consensus algorithm (RANSAC)
     \item Reject if intersection point is not close to points in sub point cloud
 \end{itemize} 
 
-After a certain, arbitray numbers of corners is found, we use the map of corners to match the OpenStreetMap data. Therefore we randomly select 3 points from the corner map, and calculate a corresponding transformation to three points on the OSM data. This makes it possible to calculate an error and improve or reject several initial transformations.
+After a certain, arbitrary numbers of corners is found, we use the map of corners to match the OpenStreetMap data. Therefore we randomly select 3 points from the corner map, and calculate a corresponding transformation to three points on the OSM data. This makes it possible to calculate an error and improve or reject several initial transformations.
 
-We then choose the best transformation and use it as intial transformation for the ICP.
+We then choose the best transformation and use it as initial transformation for the ICP.
 
 {\small
 \bibliographystyle{ieee}
